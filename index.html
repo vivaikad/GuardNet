@@ -283,8 +283,9 @@ code.mac{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:1
 .ucard .meta span{color:var(--muted)}
 .ucard .meta b{font-weight:500;word-break:break-all}
 .ubtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.ugrid{display:grid;gap:12px}
-@media (min-width:720px){.ugrid{grid-template-columns:1fr 1fr}}
+.ugrid{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+.ubtns .btn{white-space:normal;padding:0 10px;font-size:14px;line-height:1.2;text-align:center}
+@media (min-width:720px){.ugrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* Buttons */
 .btn{height:48px;padding:0 18px;border-radius:14px;font-weight:600;font-size:14.5px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,background .2s,opacity .2s;white-space:nowrap}
@@ -297,6 +298,20 @@ code.mac{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:1
 .btn-ghost{background:var(--surface-2);color:var(--text)}
 .btn-danger{background:var(--danger-soft);color:var(--danger)}
 .btn-block{width:100%}
+.btn-sm .ic{width:18px;height:18px}
+/* Impor dari router */
+.imp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.sum-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.imp-list{display:flex;flex-direction:column;gap:8px;max-height:46dvh;overflow-y:auto;margin:0 -4px 14px;padding:2px 4px}
+.imp-item{flex-wrap:wrap;box-shadow:none;border:1.5px solid var(--border);padding:10px 12px;gap:10px}
+.imp-item .av{width:38px;height:38px;border-radius:12px}
+.imp-item .item-main span{white-space:normal}
+.imp-right{width:100%;display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:-2px}
+.item-main span span,.dev-meta span{display:inline!important}
+.dn-txt small.dev-meta{white-space:normal;max-width:none}
+.mini-select{height:34px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface-2);font-size:12.5px;font-weight:600;padding:0 8px;color:var(--text);outline:none}
+.dev-meta{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.sig-good{color:var(--on)}.sig-mid{color:var(--warn)}.sig-bad{color:var(--danger)}
 .btn-sm{height:38px;padding:0 14px;font-size:13px;border-radius:12px}
 .text-btn{font-size:13px;color:var(--muted);font-weight:500;padding:8px;margin-top:6px;width:100%;text-align:center}
 .text-btn:hover{color:var(--danger)}
@@ -387,7 +402,7 @@ code.mac{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:1
 /* Toast */
 #toasts{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + var(--safe-b) + 16px);z-index:300;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 16px}
 body.no-nav #toasts{bottom:calc(24px + var(--safe-b))}
-.toast{pointer-events:auto;display:flex;align-items:center;gap:10px;max-width:440px;width:max-content;background:#152238;color:#fff;padding:12px 14px 12px 16px;border-radius:16px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:toastIn .3s cubic-bezier(.2,.9,.3,1.2)}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:10px;max-width:min(440px,calc(100vw - 32px));width:max-content;background:#152238;color:#fff;padding:12px 14px 12px 16px;border-radius:16px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:toastIn .3s cubic-bezier(.2,.9,.3,1.2)}
 .toast.out{opacity:0;transform:translateY(10px);transition:.25s}
 .toast .t-ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;font-size:12px}
 .toast.success .t-ic{background:#22c55e}.toast.error .t-ic{background:#ef4444}.toast.info .t-ic{background:#3b82f6}.toast.warn .t-ic{background:#f59e0b}
@@ -514,6 +529,7 @@ body.no-nav #toasts{bottom:calc(24px + var(--safe-b))}
     <section class="page" data-page="devices">
       <div class="page-head">
         <div><h1>Device</h1><p id="devCount">0 perangkat terdaftar</p></div>
+        <button class="btn btn-soft btn-sm" data-act="router-import"><span data-ic="download"></span>Impor Router</button>
       </div>
       <label class="search"><span data-ic="search"></span><input id="devSearch" type="search" placeholder="Cari nama, MAC, atau IP…" autocomplete="off"></label>
       <div class="chips" id="devChips"></div>
@@ -565,7 +581,7 @@ body.no-nav #toasts{bottom:calc(24px + var(--safe-b))}
 const SUPABASE_URL = "https://zlkgmaqfgsyzqzqljmlt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LXdRXJUUo5wNwXxgcWWEeQ_A91a5tEH";
 
-const APP_VERSION = "1.0.2";
+const APP_VERSION = "1.1.0";
 const HAS_SB = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 const SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 let sb = null;
@@ -880,15 +896,25 @@ const Auth = {
 /* ================= DATA STORE (HP + Supabase) =================
    Data selalu disimpan di HP (localStorage). Pada mode cloud, setiap
    perubahan dimasukkan ke antrean dan dikirim ke Supabase saat online. */
-const toRow = d => ({ id: d.id, user_id: Store.uid, name: d.name, mac: d.mac, ip: d.ip || null, category: d.category,
-  is_online: !!d.online, notes: d.notes || null, created_at: d.createdAt, updated_at: d.updatedAt });
-const fromRow = r => ({ id: r.id, name: r.name, mac: r.mac, ip: r.ip || "", category: r.category || "unknown",
-  online: !!r.is_online, notes: r.notes || "", createdAt: r.created_at, updatedAt: r.updated_at });
+const EXTRA_COLS = ["band", "rssi", "online_seconds", "last_seen", "router_name"];
+const num = v => (typeof v === "number" && isFinite(v)) ? v : null;
+const stripExtra = row => { const r = { ...row }; EXTRA_COLS.forEach(k => delete r[k]); return r; };
+const toRow = d => {
+  const r = { id: d.id, user_id: Store.uid, name: d.name, mac: d.mac, ip: d.ip || null, category: d.category,
+    is_online: !!d.online, notes: d.notes || null, created_at: d.createdAt, updated_at: d.updatedAt };
+  if (!Store.legacySchema) Object.assign(r, { band: d.band || null, rssi: num(d.rssi), online_seconds: num(d.onlineSec),
+    last_seen: d.lastSeen || null, router_name: d.routerName || null });
+  return r;
+};
+const fromRow = (r, prev = {}) => ({ id: r.id, name: r.name, mac: r.mac, ip: r.ip || "", category: r.category || "unknown",
+  online: !!r.is_online, notes: r.notes || "", createdAt: r.created_at, updatedAt: r.updated_at,
+  band: r.band ?? prev.band ?? "", rssi: r.rssi ?? prev.rssi ?? null, onlineSec: r.online_seconds ?? prev.onlineSec ?? null,
+  lastSeen: r.last_seen ?? prev.lastSeen ?? null, routerName: r.router_name ?? prev.routerName ?? "" });
 const settingsRow = () => ({ user_id: Store.uid, wifi_name: Store.settings.wifiName || "", router_ip: Store.settings.routerIp,
   home_name: Store.settings.homeName, updated_at: new Date().toISOString() });
 
 const Store = {
-  uid: null, devices: [], settings: { ...DEFAULT_SETTINGS }, queue: [], syncing: false, lastSync: null, lastError: null,
+  uid: null, devices: [], settings: { ...DEFAULT_SETTINGS }, queue: [], syncing: false, lastSync: null, lastError: null, lastImport: null, legacySchema: false,
   k(n) { return `gn_${n}_${this.uid}`; },
   init(uid) {
     this.uid = uid;
@@ -896,12 +922,13 @@ const Store = {
     this.settings = { ...DEFAULT_SETTINGS, ...LS.get(this.k("settings"), {}) };
     this.queue = LS.get(this.k("queue"), []);
     this.lastSync = LS.get(this.k("lastsync"), null);
+    this.lastImport = LS.get(this.k("lastimport"), null);
   },
-  reset() { this.uid = null; this.devices = []; this.settings = { ...DEFAULT_SETTINGS }; this.queue = []; this.lastSync = null; this.lastError = null; },
+  reset() { this.uid = null; this.devices = []; this.settings = { ...DEFAULT_SETTINGS }; this.queue = []; this.lastSync = null; this.lastError = null; this.lastImport = null; },
   save() {
     if (!this.uid) return;
     LS.set(this.k("devices"), this.devices); LS.set(this.k("settings"), this.settings);
-    LS.set(this.k("queue"), this.queue); LS.set(this.k("lastsync"), this.lastSync);
+    LS.set(this.k("queue"), this.queue); LS.set(this.k("lastsync"), this.lastSync); LS.set(this.k("lastimport"), this.lastImport);
   },
   get cloud() { return Auth.mode === "cloud"; },
   get canSync() { return this.cloud && !!sb && navigator.onLine; },
@@ -920,6 +947,15 @@ const Store = {
           ? await sb.from(op.table).upsert(op.row, { onConflict: op.table === "settings" ? "user_id" : "id" })
           : await sb.from(op.table).delete().eq("id", op.key);
         if (r.error) {
+          const em = r.error.message || "";
+          if (op.table === "devices" && op.type === "upsert" && !this.legacySchema &&
+              (r.error.code === "PGRST204" || (/column/i.test(em) && /(could not find|does not exist)/i.test(em)))) {
+            // Database belum punya kolom baru (v1.1): kirim ulang tanpa kolom tambahan
+            this.legacySchema = true;
+            this.queue = this.queue.map(o => o.table === "devices" && o.row ? { ...o, row: stripExtra(o.row) } : o);
+            toast("Database perlu update: jalankan supabase_update_v1_1.sql agar data band & sinyal ikut tersimpan di cloud", "warn", null, 8000);
+            continue;
+          }
           if (r.error.code === "23505") toast(`Gagal sinkron: MAC ${op.row ? op.row.mac : ""} sudah terdaftar di cloud`, "error");
           else { this.lastError = r.error.message; console.warn(r.error); break; }
         } else this.lastError = null;
@@ -940,7 +976,8 @@ const Store = {
       ]);
       if (d.error) throw d.error;
       if (s.error) throw s.error;
-      this.devices = d.data.map(fromRow);
+      const prevById = new Map(this.devices.map(x => [x.id, x]));
+      this.devices = d.data.map(r => fromRow(r, prevById.get(r.id)));
       if (s.data) this.settings = { ...DEFAULT_SETTINGS, wifiName: s.data.wifi_name || "", routerIp: s.data.router_ip || DEFAULT_SETTINGS.routerIp, homeName: s.data.home_name || DEFAULT_SETTINGS.homeName };
       else this.enqueue({ type: "upsert", table: "settings", key: this.uid, row: settingsRow() });
       this.lastSync = new Date().toISOString(); this.lastError = null; this.save();
@@ -1243,7 +1280,7 @@ function renderDash() {
       ${statCard("unknown", "t-unk", "alert", s.unknown, "Unknown Device", "Belum dikenali")}
     </div>
     <div class="quick">
-      <button class="qbtn" data-act="add"><span class="q-ic t-fam">${ic("plus")}</span><span>Tambah Device<small>Input dari router</small></span></button>
+      <button class="qbtn" data-act="router-import"><span class="q-ic t-fam">${ic("download")}</span><span>Impor Router<small>${Store.lastImport ? "Update " + ago(Store.lastImport) : "Salin dari ZTE"}</small></span></button>
       <button class="qbtn" data-act="open-router"><span class="q-ic t-guest">${ic("router")}</span><span>Admin Router<small>${esc(st.routerIp)}</small></span></button>
     </div>
     ${s.total ? `
@@ -1251,7 +1288,7 @@ function renderDash() {
       <div class="list">${recent.map(d => `
         <button class="item" data-act="edit" data-id="${d.id}">
           ${avatar(d)}
-          <span class="item-main"><b>${esc(d.name)}</b><span>${esc(d.ip || "IP belum diisi")} · ${esc(d.mac)}</span></span>
+          <span class="item-main"><b>${esc(d.name)}</b><span>${esc(d.ip || "IP belum diisi")} · ${esc(d.mac)}</span>${devMeta(d)}</span>
           ${catBadge(d.category)}
         </button>`).join("")}
       </div>` : `
@@ -1262,10 +1299,11 @@ function renderDash() {
         <p>Data perangkat diambil dari daftar klien di halaman admin router Anda.</p>
         <div class="steps">
           <div class="step"><i>1</i><span>Buka <b>Admin Router</b> (${esc(st.routerIp)}) dan masuk.</span></div>
-          <div class="step"><i>2</i><span>Cari menu <b>DHCP Client List</b> / <b>Daftar Perangkat</b> / <b>WLAN Clients</b>.</span></div>
-          <div class="step"><i>3</i><span>Tambahkan setiap perangkat (nama, MAC, IP) lewat tombol <b>Tambah Device</b>.</span></div>
+          <div class="step"><i>2</i><span>Buka menu <b>Topology</b>, ketuk ikon <b>2.4G</b> lalu <b>5G</b>, dan salin tabel <b>Access Devices Information</b>.</span></div>
+          <div class="step"><i>3</i><span>Ketuk <b>Impor dari Router</b> dan tempel. Semua perangkat masuk sekaligus.</span></div>
         </div>
-        <button class="btn btn-primary" data-act="add">${ic("plus", 18)}Tambah Device Pertama</button>
+        <button class="btn btn-primary" data-act="router-import">${ic("download", 18)}Impor dari Router</button>
+        <button class="btn btn-soft" data-act="add" style="margin-left:6px">${ic("plus", 18)}Manual</button>
       </div>`}
   `;
 }
@@ -1278,7 +1316,7 @@ function statCard(filter, cls, icon, num, label, sub) {
 
 function renderDevList() {
   const s = stats();
-  $("#devCount").textContent = `${s.total} perangkat terdaftar · ${s.online} online`;
+  $("#devCount").textContent = `${s.total} perangkat · ${s.online} online${Store.lastImport ? " · impor " + ago(Store.lastImport) : ""}`;
   const chips = [["all", "Semua", s.total], ["online", "🟢 Online", s.online], ["keluarga", "👨‍👩‍👧 Keluarga", s.keluarga], ["tamu", "🧳 Tamu", s.tamu], ["unknown", "❓ Tidak Dikenal", s.unknown]];
   $("#devChips").innerHTML = chips.map(([k, l, n]) => `<button class="chip ${ui.filter === k ? "active" : ""}" data-act="chip" data-cat="${k}">${l} <em>${n}</em></button>`).join("");
   const q = ui.query.trim().toLowerCase();
@@ -1287,7 +1325,7 @@ function renderDevList() {
     .filter(d => !q || [d.name, d.mac, d.ip, d.notes].join(" ").toLowerCase().includes(q))
     .sort((a, b) => a.name.localeCompare(b.name, "id", { sensitivity: "base" }));
   if (!s.total) {
-    $("#devList").innerHTML = `<div class="empty"><div class="e-ic t-fam">📱</div><h3>Belum ada perangkat</h3><p>Tambahkan perangkat yang terhubung ke WiFi rumah Anda. Lihat datanya di halaman admin router (${esc(Store.settings.routerIp)}).</p><button class="btn btn-primary" data-act="add">${ic("plus", 18)}Tambah Device</button></div>`;
+    $("#devList").innerHTML = `<div class="empty"><div class="e-ic t-fam">📱</div><h3>Belum ada perangkat</h3><p>Salin daftar perangkat dari halaman admin router (${esc(Store.settings.routerIp)}) lalu impor ke sini, atau tambahkan manual.</p><button class="btn btn-primary" data-act="router-import">${ic("download", 18)}Impor dari Router</button> <button class="btn btn-soft" data-act="add">${ic("plus", 18)}Manual</button></div>`;
     return;
   }
   if (!list.length) {
@@ -1299,7 +1337,7 @@ function renderDevList() {
       <thead><tr><th>Nama Device</th><th>MAC Address</th><th>IP Address</th><th>Kategori</th><th></th></tr></thead>
       <tbody>${list.map(d => `
         <tr>
-          <td class="c-name" data-label="Nama Device"><div class="dn">${avatar(d)}<div class="dn-txt"><b>${esc(d.name)}</b>${d.notes ? `<small>${esc(d.notes)}</small>` : ""}<button class="status ${d.online ? "on" : ""}" data-act="toggle" data-id="${d.id}" title="Ketuk untuk ubah status"><i></i>${d.online ? "Online" : "Offline"}</button></div></div></td>
+          <td class="c-name" data-label="Nama Device"><div class="dn">${avatar(d)}<div class="dn-txt"><b>${esc(d.name)}</b>${d.notes ? `<small>${esc(d.notes)}</small>` : ""}${devMeta(d)}<button class="status ${d.online ? "on" : ""}" data-act="toggle" data-id="${d.id}" title="Ketuk untuk ubah status"><i></i>${d.online ? "Online" : "Offline"}</button></div></div></td>
           <td data-label="MAC Address"><code class="mac">${esc(d.mac)}</code></td>
           <td data-label="IP Address">${esc(d.ip || "—")}</td>
           <td data-label="Kategori">${catBadge(d.category)}</td>
@@ -1323,7 +1361,7 @@ function renderUnknown() {
           <button class="status ${d.online ? "on" : ""}" data-act="toggle" data-id="${d.id}"><i></i>${d.online ? "Online" : "Offline"}</button></div>
         <button class="sbtn" data-act="edit" data-id="${d.id}" aria-label="Edit">${ic("edit", 18)}</button>
       </div>
-      <div class="meta"><span>MAC</span><b>${esc(d.mac)}</b><span>IP</span><b>${esc(d.ip || "—")}</b>${d.notes ? `<span>Catatan</span><b>${esc(d.notes)}</b>` : ""}</div>
+      <div class="meta"><span>MAC</span><b>${esc(d.mac)}</b><span>IP</span><b>${esc(d.ip || "—")}</b>${d.routerName ? `<span>Nama router</span><b>${esc(d.routerName)}</b>` : ""}${d.band ? `<span>Band</span><b>${esc(d.band)}</b>` : ""}${d.rssi != null ? `<span>Sinyal</span><b class="${sig(d.rssi).cls}">${d.rssi} dBm · ${sig(d.rssi).label}</b>` : ""}${d.online && d.onlineSec != null ? `<span>Online</span><b>${fmtDur(d.onlineSec)}</b>` : ""}${d.lastSeen ? `<span>Terlihat</span><b>${ago(d.lastSeen)}</b>` : ""}${d.notes ? `<span>Catatan</span><b>${esc(d.notes)}</b>` : ""}</div>
       <div class="ubtns">
         <button class="btn btn-primary" data-act="mark" data-id="${d.id}" data-cat="keluarga">👨‍👩‍👧 Tandai Keluarga</button>
         <button class="btn btn-guest" data-act="mark" data-id="${d.id}" data-cat="tamu">🧳 Tandai Tamu</button>
@@ -1431,7 +1469,7 @@ function openDeviceForm(id) {
   const prefix = (Store.settings.routerIp || "192.168.1.1").split(".").slice(0, 3).join(".");
   openSheet(`
     <h2 class="sheet-title">${d ? "Edit Device" : "Tambah Device"}</h2>
-    <p class="sheet-desc">Salin data dari daftar klien di halaman admin router (${esc(Store.settings.routerIp)}).</p>
+    <p class="sheet-desc">${d && d.routerName ? `Nama di router: <b>${esc(d.routerName)}</b>${d.lastSeen ? ` · terlihat ${ago(d.lastSeen)}` : ""}` : `Salin data dari daftar klien di halaman admin router (${esc(Store.settings.routerIp)}).`}</p>
     <form id="devForm" novalidate>
       <label class="fld"><span>Nama Device *</span><input name="name" maxlength="60" value="${esc(d ? d.name : "")}" placeholder="contoh: Galaxy-A36-5G" autocomplete="off"></label>
       <small class="err" data-err="name"></small>
@@ -1469,7 +1507,7 @@ function openDeviceForm(id) {
       if (!ok) return;
       const now = new Date().toISOString();
       Store.upsertDevice({
-        id: d ? d.id : uuid(), name, mac, ip,
+        ...(d || {}), id: d ? d.id : uuid(), name, mac, ip,
         category: f.querySelector('input[name="category"]:checked').value,
         online: f.online.checked, notes: f.notes.value.trim(),
         createdAt: d ? d.createdAt : now
@@ -1506,6 +1544,190 @@ function toggleOnline(id) {
   toast(`${d.name}: ${!d.online ? "Online" : "Offline"}`, "info");
 }
 
+/* ================= INFO PERANGKAT (band, sinyal, durasi) ================= */
+function fmtDur(sec) {
+  if (sec == null) return "";
+  if (sec < 60) return sec + " detik";
+  if (sec < 3600) return Math.floor(sec / 60) + " menit";
+  if (sec < 86400) { const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60); return h + " jam" + (m ? " " + m + " mnt" : ""); }
+  const dd = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600); return dd + " hari" + (h ? " " + h + " jam" : "");
+}
+function sig(rssi) {
+  if (rssi == null) return { label: "", cls: "" };
+  if (rssi >= -60) return { label: "Kuat", cls: "sig-good" };
+  if (rssi >= -75) return { label: "Sedang", cls: "sig-mid" };
+  return { label: "Lemah", cls: "sig-bad" };
+}
+function devMeta(d) {
+  const parts = [];
+  if (d.band) parts.push(esc(d.band));
+  if (d.rssi != null) parts.push(`<span class="${sig(d.rssi).cls}">${d.rssi} dBm</span>`);
+  if (d.online && d.onlineSec != null) parts.push("online " + fmtDur(d.onlineSec));
+  else if (!d.online && d.lastSeen) parts.push("terlihat " + ago(d.lastSeen));
+  return parts.length ? `<small class="dev-meta">${parts.join(" · ")}</small>` : "";
+}
+
+/* ================= IMPOR DARI ROUTER =================
+   Membaca teks yang disalin dari halaman router (contoh: ZTE F672Y →
+   Topology → Access Devices Information, atau Home → WLAN Device List).
+   Pembaca fleksibel: mencari pola "MAC lalu IP", nama diambil dari sel
+   sebelumnya, lalu durasi online (…s), RSSI (…dBm) & mode 802.11. */
+const MAC_ANY = /^([0-9a-f]{2}[:-]){5}[0-9a-f]{2}$/i;
+const HEADER_RE = /^(host ?name|name|nama|mac( address)?|ip(v[46])?( address)?|online durati|real-time|rssi|btm|rrm|802\.11 mode|access devices information|wlan device list|lan device list|more|refresh)/i;
+const notName = t => !t || MAC_ANY.test(t) || isIp(t) || /::/.test(t) || /^802\.11/i.test(t) ||
+  /^-?\d+(\.\d+)?\s*(dbm|s|bps|kbps|mbps|gbps)?$/i.test(t) || HEADER_RE.test(t);
+function tokenizeRouter(text) {
+  const out = [];
+  String(text || "").replace(/ /g, " ").split(/\r?\n/).forEach(line => {
+    line.split("\t").map(c => c.trim()).filter(Boolean).forEach(c => {
+      const hasData = /([0-9a-f]{2}[:-]){5}[0-9a-f]{2}/i.test(c) || /\d+\.\d+\.\d+\.\d+/.test(c) || /\d+\s*(dbm|bps)\b/i.test(c);
+      if (/\s/.test(c) && hasData) c.split(/\s+/).forEach(x => x && out.push(x));
+      else out.push(c);
+    });
+  });
+  return out;
+}
+function parseRouterText(text) {
+  const t = tokenizeRouter(text), found = new Map();
+  const startsRec = j => j + 1 < t.length && MAC_ANY.test(t[j]) && isIp(t[j + 1]);
+  for (let i = 0; i < t.length - 1; i++) {
+    if (!startsRec(i)) continue;
+    const mac = normMac(t[i]);
+    const host = i > 0 && !notName(t[i - 1]) ? t[i - 1].slice(0, 60) : "";
+    const rec = { mac, ip: t[i + 1], host, onlineSec: null, rssi: null, band: "" };
+    for (let j = i + 2; j < Math.min(t.length, i + 14); j++) {
+      if (startsRec(j) || startsRec(j + 1)) break;
+      let m;
+      if (rec.onlineSec == null && (m = /^(\d+)\s*s$/i.exec(t[j]))) rec.onlineSec = +m[1];
+      else if (rec.rssi == null && (m = /^(-\d+)\s*dbm$/i.exec(t[j]))) rec.rssi = +m[1];
+      else if (!rec.band && (m = /^802\.11\s*([a-z]+)/i.exec(t[j]))) {
+        const x = m[1].toLowerCase();
+        rec.band = (x === "ac" || x === "a") ? "5G" : /^(n|g|b|bg|bgn)$/.test(x) ? "2.4G" : "";
+      }
+    }
+    const prev = found.get(mac);
+    if (!prev) found.set(mac, rec);
+    else Object.keys(rec).forEach(k => { if (rec[k] !== null && rec[k] !== "" && (prev[k] === null || prev[k] === "")) prev[k] = rec[k]; });
+  }
+  return [...found.values()];
+}
+
+let imp = null;
+function openRouterImport() {
+  imp = { found: new Map(), markOffline: true, cats: {} };
+  showImportPaste();
+}
+function showImportPaste() {
+  const n = imp.found.size;
+  openSheet(`
+    <h2 class="sheet-title">Impor dari Router</h2>
+    <p class="sheet-desc">Salin tabel perangkat dari halaman router, lalu tempel di sini. Semua perangkat terbaca sekaligus.</p>
+    <div class="steps" style="margin:0 0 16px">
+      <div class="step"><i>1</i><span>Buka <b>Admin Router</b> → menu <b>Topology</b>.</span></div>
+      <div class="step"><i>2</i><span>Ketuk ikon <b>2.4G</b>. Tekan lama tulisan <b>HostName</b>, geser penanda sampai baris terakhir, lalu <b>Salin</b>.</span></div>
+      <div class="step"><i>3</i><span>Tempel di bawah, ketuk <b>Baca Data</b>. Ulangi untuk ikon <b>5G</b>.</span></div>
+    </div>
+    <div class="imp-actions">
+      <button type="button" class="btn btn-soft btn-sm" data-act="open-router">${ic("router", 18)}Buka Router</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="impClip">${ic("upload", 18)}Tempel dari Clipboard</button>
+    </div>
+    <label class="fld"><span>Data dari router${n ? ` · sudah terbaca ${n} perangkat` : ""}</span>
+      <textarea id="impText" placeholder="Tempel tabel di sini…" style="height:150px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px"></textarea></label>
+    <small class="err" id="impErr"></small>
+    <div class="sheet-actions">
+      ${n ? `<button type="button" class="btn btn-ghost" id="impBack">Kembali (${n})</button>` : `<button type="button" class="btn btn-ghost" data-act="close-sheet">Batal</button>`}
+      <button type="button" class="btn btn-primary" id="impRead">${ic("search", 18)}Baca Data</button>
+    </div>`, body => {
+    const ta = body.querySelector("#impText"), err = body.querySelector("#impErr");
+    body.querySelector("#impClip").onclick = async () => {
+      try { ta.value = await navigator.clipboard.readText(); if (!ta.value) err.textContent = "Clipboard kosong. Salin tabel di halaman router dulu."; else err.textContent = ""; }
+      catch (e) { err.textContent = "Tidak bisa membaca clipboard. Tekan lama kotak di bawah lalu pilih Tempel."; }
+    };
+    const back = body.querySelector("#impBack"); if (back) back.onclick = showImportPreview;
+    body.querySelector("#impRead").onclick = () => {
+      const recs = parseRouterText(ta.value);
+      if (!recs.length) { err.textContent = "Tidak ada perangkat terbaca. Pastikan yang disalin adalah tabel berisi MAC dan IP."; return; }
+      recs.forEach(r => {
+        const prev = imp.found.get(r.mac);
+        if (!prev) imp.found.set(r.mac, r);
+        else Object.keys(r).forEach(k => { if (r[k] !== null && r[k] !== "") prev[k] = r[k]; });
+      });
+      showImportPreview(recs.length);
+    };
+  });
+}
+function importPlan() {
+  const recs = [...imp.found.values()];
+  const byMac = new Map(Store.devices.map(d => [d.mac, d]));
+  const items = recs.map(r => ({ r, d: byMac.get(r.mac) })).sort((a, b) => (a.d ? 1 : 0) - (b.d ? 1 : 0));
+  const seen = new Set(recs.map(r => r.mac));
+  const offline = Store.devices.filter(d => !seen.has(d.mac) && d.online);
+  return { items, offline };
+}
+function showImportPreview(justRead) {
+  const { items, offline } = importPlan();
+  const nNew = items.filter(x => !x.d).length, nUpd = items.length - nNew;
+  openSheet(`
+    <h2 class="sheet-title">Pratinjau Impor</h2>
+    <p class="sheet-desc">${justRead ? `${justRead} perangkat terbaca. ` : ""}Periksa lalu simpan. Perangkat baru otomatis berkategori <b>Tidak Dikenal</b>, ubah jika Anda mengenalinya.</p>
+    <div class="sum-row">
+      <span class="badge t-unk">${nNew} baru</span>
+      <span class="badge t-fam">${nUpd} diperbarui</span>
+      <span class="badge t-on">${items.length} online</span>
+    </div>
+    <div class="imp-list">${items.map(({ r, d }) => {
+      const name = d ? d.name : (r.host || "Tanpa Nama");
+      const cat = d ? d.category : (imp.cats[r.mac] || "unknown");
+      const icon = devIcon({ name: name, notes: "" });
+      const info = [r.band, r.rssi != null ? `<span class="${sig(r.rssi).cls}">${r.rssi} dBm</span>` : "", r.onlineSec != null ? "online " + fmtDur(r.onlineSec) : ""].filter(Boolean).join(" · ");
+      return `<div class="item imp-item">
+        <span class="av ${CAT[cat].cls}">${ic(icon, 20)}</span>
+        <span class="item-main"><b>${esc(name)}</b><span>${esc(r.mac)} · ${esc(r.ip)}</span>${info ? `<span>${info}</span>` : ""}</span>
+        <span class="imp-right">${d ? catBadge(d.category) : `<select class="mini-select" data-mac="${r.mac}" aria-label="Kategori ${esc(name)}">
+          ${Object.entries(CAT).map(([k, c]) => `<option value="${k}" ${cat === k ? "selected" : ""}>${c.emoji} ${c.label}</option>`).join("")}</select>`}</span>
+      </div>`;
+    }).join("")}</div>
+    ${offline.length ? `<div class="inline-switch"><div><b>Tandai ${offline.length} perangkat lain Offline</b><small>Perangkat terdaftar yang tidak ada di tabel ini</small></div>
+      <label class="switch"><input type="checkbox" id="impOff" ${imp.markOffline ? "checked" : ""} aria-label="Tandai offline"><span></span></label></div>` : ""}
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-ghost" id="impMore">${ic("plus", 18)}Tabel Lain</button>
+      <button type="button" class="btn btn-primary" id="impSave">${ic("check", 18)}Simpan (${items.length})</button>
+    </div>`, body => {
+    body.querySelectorAll("select[data-mac]").forEach(sel => sel.onchange = () => {
+      imp.cats[sel.dataset.mac] = sel.value;
+      sel.closest(".imp-item").querySelector(".av").className = "av " + CAT[sel.value].cls;
+    });
+    const off = body.querySelector("#impOff"); if (off) off.onchange = () => imp.markOffline = off.checked;
+    body.querySelector("#impMore").onclick = showImportPaste;
+    body.querySelector("#impSave").onclick = applyImport;
+  });
+}
+function applyImport() {
+  const { items, offline } = importPlan();
+  const now = new Date().toISOString();
+  let nNew = 0, nUpd = 0, nOff = 0;
+  items.forEach(({ r, d }) => {
+    const upd = { ip: r.ip, online: true, lastSeen: now };
+    if (r.band) upd.band = r.band;
+    if (r.rssi != null) upd.rssi = r.rssi;
+    if (r.onlineSec != null) upd.onlineSec = r.onlineSec;
+    if (r.host) upd.routerName = r.host;
+    if (d) { Store.upsertDevice({ ...d, ...upd }); nUpd++; }
+    else {
+      Store.upsertDevice({ id: uuid(), name: r.host || "Tanpa Nama " + r.mac.slice(-5), mac: r.mac,
+        category: imp.cats[r.mac] || "unknown", notes: "", createdAt: now, ...upd });
+      nNew++;
+    }
+  });
+  if (imp.markOffline) offline.forEach(d => { Store.upsertDevice({ ...d, online: false, onlineSec: null }); nOff++; });
+  Store.lastImport = now;
+  Store.save(); Store.commit();
+  closeSheet();
+  imp = null;
+  toast(`Impor selesai: ${nNew} baru, ${nUpd} diperbarui${nOff ? `, ${nOff} offline` : ""}`, "success", null, 4500);
+  if (nNew && Store.devices.some(x => x.category === "unknown")) setTimeout(() => toast("Periksa perangkat baru di menu Tak Dikenal", "info", { label: "Lihat", fn: () => go("unknown") }), 900);
+}
+
 /* ================= EXPORT / IMPORT ================= */
 function exportData() {
   const data = { app: "GuardNet", version: APP_VERSION, exportedAt: new Date().toISOString(), settings: Store.settings, devices: Store.devices };
@@ -1532,7 +1754,7 @@ $("#importFile").onchange = async e => {
       const ip = isIp(String(r.ip || "").trim()) ? String(r.ip).trim() : "";
       const existing = Store.devices.find(x => x.mac === mac);
       Store.upsertDevice({
-        id: existing ? existing.id : uuid(), name, mac, ip,
+        ...(existing || {}), id: existing ? existing.id : uuid(), name, mac, ip,
         category: CAT[r.category] ? r.category : "unknown",
         online: !!r.online, notes: String(r.notes || "").slice(0, 120),
         createdAt: existing ? existing.createdAt : (r.createdAt || new Date().toISOString())
@@ -1569,6 +1791,7 @@ document.addEventListener("click", async e => {
     case "dismiss-install": SS.set("gn_install_dismiss", 1); renderDash(); break;
     case "open-router": window.open("http://" + Store.settings.routerIp, "_blank", "noopener"); break;
     case "export": exportData(); break;
+    case "router-import": openRouterImport(); break;
     case "import": $("#importFile").click(); break;
     case "logout": logout(); break;
     case "sync":
