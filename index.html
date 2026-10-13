@@ -175,8 +175,9 @@ main{max-width:960px;margin:0 auto;padding:8px 16px calc(var(--nav-h) + var(--sa
 .hero-ic{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center}
 .segbar{display:flex;height:10px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.18);margin-top:18px;position:relative;z-index:1;gap:2px}
 .segbar span{height:100%;transition:width .6s ease}
-.seg-fam{background:#ffffff}.seg-guest{background:#7ee8dc}.seg-unk{background:#ffb27a}
-.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;position:relative;z-index:1}
+.seg-fam{background:#ffffff}.seg-guest{background:#7ee8dc}.seg-unk{background:#ffb27a}.seg-blk{background:#ff8f8f}
+.legend{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;margin-top:14px;position:relative;z-index:1}
+.legend.four{grid-auto-flow:row;grid-template-columns:1fr 1fr}
 .legend div{background:rgba(255,255,255,.12);border-radius:14px;padding:10px 10px}
 .legend b{display:block;font-size:20px;font-weight:700;line-height:1.2}
 .legend span{font-size:11.5px;opacity:.92;display:flex;align-items:center;gap:5px;white-space:nowrap}
@@ -185,9 +186,14 @@ main{max-width:960px;margin:0 auto;padding:8px 16px calc(var(--nav-h) + var(--sa
 /* Alert */
 .alert{display:flex;align-items:center;gap:12px;margin-top:16px;padding:14px 14px;border-radius:18px;background:var(--unk-soft);color:var(--text);text-align:left;width:100%}
 .alert .a-ic{width:40px;height:40px;border-radius:12px;background:var(--unk);color:#fff;display:grid;place-items:center;flex-shrink:0}
-.alert b{font-size:14.5px;display:block}
+.alert b{font-size:14.5px;display:block;color:var(--text)}
+.alert.danger b{color:var(--danger)}
 .alert span{font-size:12.5px;color:var(--muted)}
 .alert .ic.chev{margin-left:auto;color:var(--unk)}
+.alert.danger{background:var(--danger-soft)}.alert.danger .a-ic{background:var(--danger)}.alert.danger .ic.chev{color:var(--danger)}
+.alert.warnc{background:var(--warn-soft)}.alert.warnc .a-ic{background:var(--warn)}.alert.warnc .ic.chev{color:var(--warn)}
+.alert.danger .a-ic{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.45)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
 .banner{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:14px;border-radius:18px;background:var(--primary-soft)}
 .banner .b-txt{flex:1;min-width:0}
 .banner b{font-size:14px;display:block}
@@ -310,6 +316,20 @@ code.mac{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:1
 .item-main span span,.dev-meta span{display:inline!important}
 .dn-txt small.dev-meta{white-space:normal;max-width:none}
 .mini-select{height:34px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface-2);font-size:12.5px;font-weight:600;padding:0 8px;color:var(--text);outline:none}
+.t-blk{background:var(--danger-soft);color:var(--danger)}
+.status.blk{background:var(--danger-soft);color:var(--danger);margin-left:4px}
+.item-main .tag-new,.tag-new{display:inline-block!important;width:auto!important;background:var(--danger);color:#fff!important;font-size:10px;font-weight:700;letter-spacing:.4px;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:2px}
+.mac-card{background:var(--surface-2);border-radius:16px;padding:14px;text-align:center}
+.mac-card small{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}
+.octets{display:flex;justify-content:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.octets span{min-width:40px;padding:8px 0;border-radius:10px;background:var(--surface);border:1.5px solid var(--border);font:700 15px ui-monospace,Menlo,Consolas,monospace}
+.warn-box,.note-box{border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.55;margin-bottom:12px}
+.warn-box{background:var(--danger-soft);color:var(--danger)}
+.note-box{background:var(--warn-soft);color:var(--text)}
+.link-inline{color:var(--primary);font-weight:600;text-decoration:underline;padding:0;font-size:inherit}
+.btn-danger-solid{background:var(--danger);color:#fff;box-shadow:0 6px 16px rgba(220,38,38,.25)}
+code.k{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--surface-2);padding:1px 6px;border-radius:6px;font-size:12.5px;word-break:break-all}
+.pw-box{font:700 21px ui-monospace,Menlo,Consolas,monospace;letter-spacing:1.5px;text-align:center;padding:14px 10px;background:var(--surface);border:1.5px dashed var(--border);border-radius:14px;word-break:break-all;margin-bottom:10px;user-select:all}
 .rename-note{color:var(--guest)!important;font-size:11.5px;font-weight:600}
 .dev-meta{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
 .sig-good{color:var(--on)}.sig-mid{color:var(--warn)}.sig-bad{color:var(--danger)}
@@ -582,12 +602,12 @@ body.no-nav #toasts{bottom:calc(24px + var(--safe-b))}
 const SUPABASE_URL = "https://zlkgmaqfgsyzqzqljmlt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LXdRXJUUo5wNwXxgcWWEeQ_A91a5tEH";
 
-const APP_VERSION = "1.1.1";
+const APP_VERSION = "1.2.0";
 const HAS_SB = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 const SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 let sb = null;
 
-const DEFAULT_SETTINGS = { wifiName: "", routerIp: "192.168.1.1", homeName: "WiFi Guard Home" };
+const DEFAULT_SETTINGS = { wifiName: "", routerIp: "192.168.1.1", homeName: "WiFi Guard Home", pwChangedAt: null };
 const CAT = {
   keluarga: { label: "Keluarga", emoji: "👨‍👩‍👧", cls: "t-fam" },
   tamu:     { label: "Tamu", emoji: "🧳", cls: "t-guest" },
@@ -671,6 +691,10 @@ const I = {
   phone: '<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>',
   laptop: '<rect x="4" y="4" width="16" height="11" rx="1.5"/><path d="M2 19h20"/>',
   tv: '<rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 21h8"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/>',
+  unlock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.2"/>',
+  key: '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8"/><path d="m17 5 3 3"/><path d="m14.5 7.5 2 2"/>',
+  copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
   install: '<path d="M12 3v11"/><path d="m7.5 9.5 4.5 4.5 4.5-4.5"/><rect x="3" y="17" width="18" height="4" rx="1.5"/>',
   palette: '<circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M12 3a9 9 0 0 1 0 18" fill="currentColor"/>',
   userFill: '<circle cx="12" cy="7.5" r="4.5"/><path d="M3 21c0-4.4 4-7.5 9-7.5s9 3.1 9 7.5z"/>',
@@ -897,25 +921,27 @@ const Auth = {
 /* ================= DATA STORE (HP + Supabase) =================
    Data selalu disimpan di HP (localStorage). Pada mode cloud, setiap
    perubahan dimasukkan ke antrean dan dikirim ke Supabase saat online. */
-const EXTRA_COLS = ["band", "rssi", "online_seconds", "last_seen", "router_name"];
+// Kolom opsional (ditambah lewat file SQL update). Jika belum ada di database,
+// kolom tersebut otomatis tidak dikirim, sehingga sinkron tetap berjalan.
+const OPTIONAL_COLS = { devices: ["band", "rssi", "online_seconds", "last_seen", "router_name", "blocked", "blocked_at", "first_seen"],
+  settings: ["wifi_pw_changed_at"] };
 const num = v => (typeof v === "number" && isFinite(v)) ? v : null;
-const stripExtra = row => { const r = { ...row }; EXTRA_COLS.forEach(k => delete r[k]); return r; };
-const toRow = d => {
-  const r = { id: d.id, user_id: Store.uid, name: d.name, mac: d.mac, ip: d.ip || null, category: d.category,
-    is_online: !!d.online, notes: d.notes || null, created_at: d.createdAt, updated_at: d.updatedAt };
-  if (!Store.legacySchema) Object.assign(r, { band: d.band || null, rssi: num(d.rssi), online_seconds: num(d.onlineSec),
-    last_seen: d.lastSeen || null, router_name: d.routerName || null });
-  return r;
-};
+const dropMissing = row => { const r = { ...row }; Store.missingCols.forEach(k => delete r[k]); return r; };
+const toRow = d => dropMissing({ id: d.id, user_id: Store.uid, name: d.name, mac: d.mac, ip: d.ip || null, category: d.category,
+  is_online: !!d.online, notes: d.notes || null, created_at: d.createdAt, updated_at: d.updatedAt,
+  band: d.band || null, rssi: num(d.rssi), online_seconds: num(d.onlineSec), last_seen: d.lastSeen || null, router_name: d.routerName || null,
+  blocked: !!d.blocked, blocked_at: d.blockedAt || null, first_seen: d.firstSeen || d.createdAt || null });
 const fromRow = (r, prev = {}) => ({ id: r.id, name: r.name, mac: r.mac, ip: r.ip || "", category: r.category || "unknown",
   online: !!r.is_online, notes: r.notes || "", createdAt: r.created_at, updatedAt: r.updated_at,
   band: r.band ?? prev.band ?? "", rssi: r.rssi ?? prev.rssi ?? null, onlineSec: r.online_seconds ?? prev.onlineSec ?? null,
-  lastSeen: r.last_seen ?? prev.lastSeen ?? null, routerName: r.router_name ?? prev.routerName ?? "" });
-const settingsRow = () => ({ user_id: Store.uid, wifi_name: Store.settings.wifiName || "", router_ip: Store.settings.routerIp,
-  home_name: Store.settings.homeName, updated_at: new Date().toISOString() });
+  lastSeen: r.last_seen ?? prev.lastSeen ?? null, routerName: r.router_name ?? prev.routerName ?? "",
+  blocked: r.blocked ?? prev.blocked ?? false, blockedAt: r.blocked_at ?? prev.blockedAt ?? null,
+  firstSeen: r.first_seen ?? prev.firstSeen ?? r.created_at });
+const settingsRow = () => dropMissing({ user_id: Store.uid, wifi_name: Store.settings.wifiName || "", router_ip: Store.settings.routerIp,
+  home_name: Store.settings.homeName, wifi_pw_changed_at: Store.settings.pwChangedAt || null, updated_at: new Date().toISOString() });
 
 const Store = {
-  uid: null, devices: [], settings: { ...DEFAULT_SETTINGS }, queue: [], syncing: false, lastSync: null, lastError: null, lastImport: null, legacySchema: false,
+  uid: null, devices: [], settings: { ...DEFAULT_SETTINGS }, queue: [], syncing: false, lastSync: null, lastError: null, lastImport: null, missingCols: new Set(),
   k(n) { return `gn_${n}_${this.uid}`; },
   init(uid) {
     this.uid = uid;
@@ -949,13 +975,18 @@ const Store = {
           : await sb.from(op.table).delete().eq("id", op.key);
         if (r.error) {
           const em = r.error.message || "";
-          if (op.table === "devices" && op.type === "upsert" && !this.legacySchema &&
-              (r.error.code === "PGRST204" || (/column/i.test(em) && /(could not find|does not exist)/i.test(em)))) {
-            // Database belum punya kolom baru (v1.1): kirim ulang tanpa kolom tambahan
-            this.legacySchema = true;
-            this.queue = this.queue.map(o => o.table === "devices" && o.row ? { ...o, row: stripExtra(o.row) } : o);
-            toast("Database perlu update: jalankan supabase_update_v1_1.sql agar data band & sinyal ikut tersimpan di cloud", "warn", null, 8000);
-            continue;
+          if (op.type === "upsert" && (r.error.code === "PGRST204" || (/column/i.test(em) && /(could not find|does not exist)/i.test(em)))) {
+            // Database belum punya kolom baru: kirim ulang tanpa kolom tersebut
+            const m = /'([a-z_]+)' column|column "?([a-z_]+)"?/i.exec(em);
+            const col = m && (m[1] || m[2]);
+            const opt = OPTIONAL_COLS[op.table] || [];
+            const cols = col && opt.includes(col) ? [col] : opt.filter(c => !this.missingCols.has(c));
+            if (cols.length) {
+              cols.forEach(c => this.missingCols.add(c));
+              this.queue = this.queue.map(o => o.row ? { ...o, row: dropMissing(o.row) } : o);
+              if (!this.warnedSchema) { this.warnedSchema = true; toast("Database Supabase perlu update: jalankan file SQL update terbaru agar semua data ikut tersimpan di cloud", "warn", null, 8000); }
+              continue;
+            }
           }
           if (r.error.code === "23505") toast(`Gagal sinkron: MAC ${op.row ? op.row.mac : ""} sudah terdaftar di cloud`, "error");
           else { this.lastError = r.error.message; console.warn(r.error); break; }
@@ -979,7 +1010,7 @@ const Store = {
       if (s.error) throw s.error;
       const prevById = new Map(this.devices.map(x => [x.id, x]));
       this.devices = d.data.map(r => fromRow(r, prevById.get(r.id)));
-      if (s.data) this.settings = { ...DEFAULT_SETTINGS, wifiName: s.data.wifi_name || "", routerIp: s.data.router_ip || DEFAULT_SETTINGS.routerIp, homeName: s.data.home_name || DEFAULT_SETTINGS.homeName };
+      if (s.data) this.settings = { ...DEFAULT_SETTINGS, wifiName: s.data.wifi_name || "", routerIp: s.data.router_ip || DEFAULT_SETTINGS.routerIp, homeName: s.data.home_name || DEFAULT_SETTINGS.homeName, pwChangedAt: s.data.wifi_pw_changed_at ?? this.settings.pwChangedAt ?? null };
       else this.enqueue({ type: "upsert", table: "settings", key: this.uid, row: settingsRow() });
       this.lastSync = new Date().toISOString(); this.lastError = null; this.save();
       return true;
@@ -1027,6 +1058,7 @@ function toast(msg, type = "info", action = null, ms) {
 let sheetOnClose = null;
 function openSheet(html, onMount, onClose) {
   const wrap = $("#sheet");
+  $("#toasts").innerHTML = "";
   $("#sheetBody").innerHTML = html;
   wrap.hidden = false;
   requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.add("open")));
@@ -1219,8 +1251,10 @@ window.addEventListener("scroll", () => $("#topbar").classList.toggle("scrolled"
 
 /* ================= RENDER ================= */
 function stats() {
-  const d = Store.devices, c = k => d.filter(x => x.category === k).length;
-  return { total: d.length, online: d.filter(x => x.online).length, keluarga: c("keluarga"), tamu: c("tamu"), unknown: c("unknown") };
+  const d = Store.devices, act = d.filter(x => !x.blocked), c = k => act.filter(x => x.category === k).length;
+  return { total: d.length, online: d.filter(x => x.online).length, keluarga: c("keluarga"), tamu: c("tamu"), unknown: c("unknown"),
+    blocked: d.length - act.length, blockedOnline: d.filter(x => x.blocked && x.online).length,
+    unknownOnline: act.filter(x => x.category === "unknown" && x.online).length };
 }
 function devIcon(d) {
   const n = (d.name + " " + (d.notes || "")).toLowerCase();
@@ -1229,6 +1263,7 @@ function devIcon(d) {
   return "phone";
 }
 function avatar(d, size = 44) {
+  if (d.blocked) return `<span class="av t-blk" style="width:${size}px;height:${size}px">${ic("ban")}<span class="sdot ${d.online ? "on" : ""}"></span></span>`;
   return `<span class="av ${CAT[d.category].cls}" style="width:${size}px;height:${size}px">${ic(devIcon(d))}<span class="sdot ${d.online ? "on" : ""}"></span></span>`;
 }
 function catBadge(c) { return `<span class="badge ${CAT[c].cls}">${CAT[c].emoji} ${CAT[c].label}</span>`; }
@@ -1265,15 +1300,18 @@ function renderDash() {
         <div class="hero-ic">${ic("shield", 28)}</div>
       </div>
       <div class="segbar">
-        ${s.total ? `<span class="seg-fam" style="width:${pct(s.keluarga)}%"></span><span class="seg-guest" style="width:${pct(s.tamu)}%"></span><span class="seg-unk" style="width:${pct(s.unknown)}%"></span>` : ""}
+        ${s.total ? `<span class="seg-fam" style="width:${pct(s.keluarga)}%"></span><span class="seg-guest" style="width:${pct(s.tamu)}%"></span><span class="seg-unk" style="width:${pct(s.unknown)}%"></span><span class="seg-blk" style="width:${pct(s.blocked)}%"></span>` : ""}
       </div>
-      <div class="legend">
+      <div class="legend ${s.blocked ? "four" : ""}">
         <div><b>${s.keluarga}</b><span><i style="background:#fff"></i>Keluarga</span></div>
         <div><b>${s.tamu}</b><span><i style="background:#7ee8dc"></i>Tamu</span></div>
         <div><b>${s.unknown}</b><span><i style="background:#ffb27a"></i>Tidak Dikenal</span></div>
+        ${s.blocked ? `<div><b>${s.blocked}</b><span><i style="background:#ff8f8f"></i>Diblokir</span></div>` : ""}
       </div>
     </div>
-    ${s.unknown ? `<button class="alert" data-go="unknown"><span class="a-ic">${ic("alert")}</span><span><b>${s.unknown} perangkat tidak dikenal</b><span>Periksa dan tandai sebagai Keluarga atau Tamu</span></span>${ic("chev").replace('class="ic"', 'class="ic chev"')}</button>` : ""}
+    ${s.blockedOnline ? `<button class="alert danger" data-act="filter" data-cat="blocked"><span class="a-ic">${ic("ban")}</span><span><b>🚨 ${s.blockedOnline} perangkat diblokir masih terhubung!</b><span>Periksa aturan Black List di router atau ganti password WiFi</span></span>${chev()}</button>` : ""}
+    ${s.unknown ? `<button class="alert ${s.unknownOnline ? "danger" : ""}" data-go="unknown"><span class="a-ic">${ic("alert")}</span><span><b>${s.unknown} perangkat tidak dikenal${s.unknownOnline ? ` · ${s.unknownOnline} sedang online` : ""}</b><span>${s.unknownOnline ? "Periksa sekarang: tandai, atau blokir jika penyusup" : "Periksa dan tandai sebagai Keluarga atau Tamu"}</span></span>${chev()}</button>` : ""}
+    ${pwAlert()}
     <div class="stat-grid">
       ${statCard("online", "t-on", "wifi", s.online, "Online Device", `dari ${s.total} perangkat`)}
       ${statCard("keluarga", "t-fam", "shield", s.keluarga, "Trusted Device", "Perangkat keluarga")}
@@ -1319,10 +1357,11 @@ function renderDevList() {
   const s = stats();
   $("#devCount").textContent = `${s.total} perangkat · ${s.online} online${Store.lastImport ? " · impor " + ago(Store.lastImport) : ""}`;
   const chips = [["all", "Semua", s.total], ["online", "🟢 Online", s.online], ["keluarga", "👨‍👩‍👧 Keluarga", s.keluarga], ["tamu", "🧳 Tamu", s.tamu], ["unknown", "❓ Tidak Dikenal", s.unknown]];
+  if (s.blocked || ui.filter === "blocked") chips.push(["blocked", "🚫 Diblokir", s.blocked]);
   $("#devChips").innerHTML = chips.map(([k, l, n]) => `<button class="chip ${ui.filter === k ? "active" : ""}" data-act="chip" data-cat="${k}">${l} <em>${n}</em></button>`).join("");
   const q = ui.query.trim().toLowerCase();
   const list = Store.devices
-    .filter(d => ui.filter === "all" || (ui.filter === "online" ? d.online : d.category === ui.filter))
+    .filter(d => ui.filter === "all" ? true : ui.filter === "online" ? d.online : ui.filter === "blocked" ? !!d.blocked : (!d.blocked && d.category === ui.filter))
     .filter(d => !q || [d.name, d.mac, d.ip, d.notes].join(" ").toLowerCase().includes(q))
     .sort((a, b) => a.name.localeCompare(b.name, "id", { sensitivity: "base" }));
   if (!s.total) {
@@ -1338,10 +1377,10 @@ function renderDevList() {
       <thead><tr><th>Nama Device</th><th>MAC Address</th><th>IP Address</th><th>Kategori</th><th></th></tr></thead>
       <tbody>${list.map(d => `
         <tr>
-          <td class="c-name" data-label="Nama Device"><div class="dn">${avatar(d)}<div class="dn-txt"><b>${esc(d.name)}</b>${d.notes ? `<small>${esc(d.notes)}</small>` : ""}${devMeta(d)}<button class="status ${d.online ? "on" : ""}" data-act="toggle" data-id="${d.id}" title="Ketuk untuk ubah status"><i></i>${d.online ? "Online" : "Offline"}</button></div></div></td>
+          <td class="c-name" data-label="Nama Device"><div class="dn">${avatar(d)}<div class="dn-txt"><b>${esc(d.name)}</b>${d.notes ? `<small>${esc(d.notes)}</small>` : ""}${devMeta(d)}<button class="status ${d.online ? "on" : ""}" data-act="toggle" data-id="${d.id}" title="Ketuk untuk ubah status"><i></i>${d.online ? "Online" : "Offline"}</button>${d.blocked ? `<button class="status blk" data-act="unblock" data-id="${d.id}" title="Ketuk untuk buka blokir">🚫 Diblokir</button>` : ""}</div></div></td>
           <td data-label="MAC Address"><code class="mac">${esc(d.mac)}</code></td>
           <td data-label="IP Address">${esc(d.ip || "—")}</td>
-          <td data-label="Kategori">${catBadge(d.category)}</td>
+          <td data-label="Kategori">${d.blocked ? `<span class="badge t-blk">🚫 Diblokir</span>` : catBadge(d.category)}</td>
           <td class="c-act"><button class="sbtn" data-act="edit" data-id="${d.id}" aria-label="Edit">${ic("edit", 18)}</button><button class="sbtn del" data-act="del" data-id="${d.id}" aria-label="Hapus">${ic("trash", 18)}</button></td>
         </tr>`).join("")}
       </tbody>
@@ -1349,7 +1388,7 @@ function renderDevList() {
 }
 
 function renderUnknown() {
-  const list = Store.devices.filter(d => d.category === "unknown").sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+  const list = Store.devices.filter(d => d.category === "unknown" && !d.blocked).sort((a, b) => (b.online - a.online) || (b.createdAt || "").localeCompare(a.createdAt || ""));
   $("#unkCount").textContent = list.length ? `${list.length} perangkat perlu diperiksa` : "Perangkat yang belum dikenali";
   if (!list.length) {
     $("#unkList").innerHTML = `<div class="empty"><div class="e-ic t-on">🎉</div><h3>Semua perangkat dikenali</h3><p>Tidak ada perangkat asing. Perangkat baru yang ditambahkan dengan kategori "Tidak Dikenal" akan muncul di sini.</p><button class="btn btn-soft" data-act="add">${ic("plus", 18)}Tambah Device</button></div>`;
@@ -1358,7 +1397,7 @@ function renderUnknown() {
   $("#unkList").innerHTML = `<div class="ugrid">${list.map(d => `
     <div class="ucard" data-card="${d.id}">
       <div class="ucard-top">${avatar(d, 48)}
-        <div class="item-main"><b>${esc(d.name)}</b><span>Ditambahkan ${ago(d.createdAt)}</span>
+        <div class="item-main"><b>${esc(d.name)}</b><span>Pertama terlihat ${ago(d.firstSeen || d.createdAt)}</span>
           <button class="status ${d.online ? "on" : ""}" data-act="toggle" data-id="${d.id}"><i></i>${d.online ? "Online" : "Offline"}</button></div>
         <button class="sbtn" data-act="edit" data-id="${d.id}" aria-label="Edit">${ic("edit", 18)}</button>
       </div>
@@ -1367,6 +1406,7 @@ function renderUnknown() {
         <button class="btn btn-primary" data-act="mark" data-id="${d.id}" data-cat="keluarga">👨‍👩‍👧 Tandai Keluarga</button>
         <button class="btn btn-guest" data-act="mark" data-id="${d.id}" data-cat="tamu">🧳 Tandai Tamu</button>
       </div>
+      <button class="btn btn-danger btn-block" style="margin-top:10px" data-act="block" data-id="${d.id}">${ic("ban", 18)}Blokir Perangkat Ini</button>
       <button class="text-btn" data-act="del" data-id="${d.id}">Hapus perangkat ini</button>
     </div>`).join("")}</div>`;
 }
@@ -1391,6 +1431,15 @@ function renderSettings() {
         <label class="fld"><span>Nama Rumah</span><input name="homeName" maxlength="40" value="${esc(st.homeName)}" placeholder="WiFi Guard Home"></label>
         <button class="btn btn-primary btn-block" type="submit">${ic("check", 18)}Simpan Pengaturan</button>
       </form>
+    </div>
+
+    <div class="set-group"><h3>Keamanan WiFi</h3>
+      <div class="card">
+        <div class="row"><span class="r-ic ${pwState().due || !pwState().set ? "t-unk" : "t-on"}">${ic("key")}</span><div class="r-txt"><b>Password WiFi</b><span>${pwState().set ? `Diganti ${fmtDate(Store.settings.pwChangedAt)} (${pwState().days} hari lalu)${pwState().due ? " · saatnya ganti" : ""}` : "Belum dicatat kapan terakhir diganti"}</span></div>
+          <button class="btn btn-soft btn-sm" data-act="pw-guide">Panduan</button></div>
+        <div class="row"><span class="r-ic t-blk">${ic("ban")}</span><div class="r-txt"><b>Perangkat Diblokir</b><span>${stats().blocked} perangkat${stats().blockedOnline ? ` · <b style="color:var(--danger)">${stats().blockedOnline} masih terhubung!</b>` : ""}</span></div>
+          <button class="btn btn-ghost btn-sm" data-act="filter" data-cat="blocked">Lihat</button></div>
+      </div>
     </div>
 
     <div class="set-group"><h3>Tampilan</h3>
@@ -1470,7 +1519,7 @@ function openDeviceForm(id) {
   const prefix = (Store.settings.routerIp || "192.168.1.1").split(".").slice(0, 3).join(".");
   openSheet(`
     <h2 class="sheet-title">${d ? "Edit Device" : "Tambah Device"}</h2>
-    <p class="sheet-desc">${d && d.routerName ? `Nama di router: <b>${esc(d.routerName)}</b>${d.lastSeen ? ` · terlihat ${ago(d.lastSeen)}` : ""}` : `Salin data dari daftar klien di halaman admin router (${esc(Store.settings.routerIp)}).`}</p>
+    <p class="sheet-desc">${d ? [d.routerName ? `Nama di router: <b>${esc(d.routerName)}</b>` : "", `Pertama terlihat: <b>${fmtDate(d.firstSeen || d.createdAt, true)}</b>`, d.lastSeen ? `Terakhir terlihat ${ago(d.lastSeen)}` : "", d.blocked ? `<b style="color:var(--danger)">🚫 Diblokir sejak ${fmtDate(d.blockedAt)}</b>` : ""].filter(Boolean).join("<br>") : `Salin data dari daftar klien di halaman admin router (${esc(Store.settings.routerIp)}).`}</p>
     <form id="devForm" novalidate>
       <label class="fld"><span>Nama Device *</span><input name="name" maxlength="60" value="${esc(d ? d.name : "")}" placeholder="contoh: Galaxy-A36-5G" autocomplete="off"></label>
       <small class="err" data-err="name"></small>
@@ -1485,6 +1534,9 @@ function openDeviceForm(id) {
       <div class="inline-switch"><div><b>Status Online</b><small>Sedang terhubung ke WiFi</small></div>
         <label class="switch"><input type="checkbox" name="online" ${!d || d.online ? "checked" : ""} aria-label="Status online"><span></span></label></div>
       <label class="fld"><span>Catatan</span><textarea name="notes" maxlength="120" placeholder="contoh: HP Ayah, laptop kerja">${esc(d ? d.notes : "")}</textarea></label>
+      ${d ? (d.blocked
+        ? `<button type="button" class="btn btn-soft btn-block" id="devBlock" style="margin-bottom:10px">${ic("unlock", 18)}Buka Blokir</button>`
+        : `<button type="button" class="btn btn-danger btn-block" id="devBlock" style="margin-bottom:10px">${ic("ban", 18)}Blokir Perangkat Ini</button>`) : ""}
       <div class="sheet-actions">
         ${d ? `<button type="button" class="btn btn-danger" id="devDel" style="flex:0 0 auto;width:48px;padding:0" aria-label="Hapus">${ic("trash", 18)}</button>` : `<button type="button" class="btn btn-ghost" data-act="close-sheet">Batal</button>`}
         <button type="submit" class="btn btn-primary">${ic("check", 18)}Simpan</button>
@@ -1494,6 +1546,7 @@ function openDeviceForm(id) {
     f.mac.oninput = () => { f.mac.value = normMac(f.mac.value); };
     f.ip.oninput = () => { f.ip.value = f.ip.value.replace(/[^\d.]/g, ""); };
     if (d) body.querySelector("#devDel").onclick = () => { closeSheet(); setTimeout(() => deleteDevice(d.id), 320); };
+    if (d) body.querySelector("#devBlock").onclick = () => d.blocked ? openUnblockGuide(d.id) : openBlockGuide(d.id);
     if (!d) setTimeout(() => f.name.focus(), 350);
     f.onsubmit = e => {
       e.preventDefault();
@@ -1511,7 +1564,7 @@ function openDeviceForm(id) {
         ...(d || {}), id: d ? d.id : uuid(), name, mac, ip,
         category: f.querySelector('input[name="category"]:checked').value,
         online: f.online.checked, notes: f.notes.value.trim(),
-        createdAt: d ? d.createdAt : now
+        createdAt: d ? d.createdAt : now, firstSeen: d ? (d.firstSeen || d.createdAt) : now
       });
       Store.commit();
       closeSheet();
@@ -1672,6 +1725,7 @@ function importPlan() {
 function showImportPreview(justRead) {
   const { items, offline } = importPlan();
   const nNew = items.filter(x => !x.d).length, nUpd = items.length - nNew;
+  const blockedSeen = items.filter(x => x.d && x.d.blocked);
   openSheet(`
     <h2 class="sheet-title">Pratinjau Impor</h2>
     <p class="sheet-desc">${justRead ? `${justRead} perangkat terbaca. ` : ""}Periksa lalu simpan. Perangkat baru otomatis berkategori <b>Tidak Dikenal</b>, ubah jika Anda mengenalinya.</p>
@@ -1681,6 +1735,8 @@ function showImportPreview(justRead) {
       ${items.filter(x => renameTo(x.d, x.r)).length ? `<span class="badge t-guest">${items.filter(x => renameTo(x.d, x.r)).length} nama baru</span>` : ""}
       <span class="badge t-on">${items.length} online</span>
     </div>
+    ${blockedSeen.length ? `<div class="warn-box">🚨 <b>${blockedSeen.length} perangkat yang sudah diblokir masih terhubung:</b> ${blockedSeen.map(x => esc(x.d.name)).join(", ")}. Periksa aturan Black List di router, atau ganti password WiFi.</div>` : ""}
+    ${nNew ? `<div class="note-box">🆕 <b>${nNew} perangkat belum pernah terlihat</b> (bertanda <span class="tag-new" style="margin:0">BARU</span>). Pastikan Anda mengenalinya.</div>` : ""}
     <div class="imp-list">${items.map(({ r, d }) => {
       const newName = renameTo(d, r);
       const name = d ? d.name : (r.host || "Tanpa Nama");
@@ -1689,8 +1745,8 @@ function showImportPreview(justRead) {
       const info = [r.band, r.rssi != null ? `<span class="${sig(r.rssi).cls}">${r.rssi} dBm</span>` : "", r.onlineSec != null ? "online " + fmtDur(r.onlineSec) : ""].filter(Boolean).join(" · ");
       return `<div class="item imp-item">
         <span class="av ${CAT[cat].cls}">${ic(icon, 20)}</span>
-        <span class="item-main"><b>${newName ? `${esc(newName)}</b><span class="rename-note">sebelumnya: ${esc(name)}</span>` : `${esc(name)}</b>`}<span>${esc(r.mac)} · ${esc(r.ip)}</span>${info ? `<span>${info}</span>` : ""}</span>
-        <span class="imp-right">${d ? catBadge(d.category) : `<select class="mini-select" data-mac="${r.mac}" aria-label="Kategori ${esc(name)}">
+        <span class="item-main"><b>${esc(newName || name)}${!d ? `<span class="tag-new">BARU</span>` : ""}${d && d.blocked ? `<span class="tag-new">DIBLOKIR</span>` : ""}</b>${newName ? `<span class="rename-note">sebelumnya: ${esc(name)}</span>` : ""}<span>${esc(r.mac)} · ${esc(r.ip)}</span>${info ? `<span>${info}</span>` : ""}</span>
+        <span class="imp-right">${d ? (d.blocked ? `<span class="badge t-blk">🚫 Diblokir</span>` : catBadge(d.category)) : `<select class="mini-select" data-mac="${r.mac}" aria-label="Kategori ${esc(name)}">
           ${Object.entries(CAT).map(([k, c]) => `<option value="${k}" ${cat === k ? "selected" : ""}>${c.emoji} ${c.label}</option>`).join("")}</select>`}</span>
       </div>`;
     }).join("")}</div>
@@ -1726,7 +1782,7 @@ function applyImport() {
     }
     else {
       Store.upsertDevice({ id: uuid(), name: r.host || "Tanpa Nama " + r.mac.slice(-5), mac: r.mac,
-        category: imp.cats[r.mac] || "unknown", notes: "", createdAt: now, ...upd });
+        category: imp.cats[r.mac] || "unknown", notes: "", createdAt: now, firstSeen: now, ...upd });
       nNew++;
     }
   });
@@ -1736,7 +1792,150 @@ function applyImport() {
   closeSheet();
   imp = null;
   toast(`Impor selesai: ${nNew} baru, ${nUpd} diperbarui${nRen ? `, ${nRen} nama baru` : ""}${nOff ? `, ${nOff} offline` : ""}`, "success", null, 4500);
-  if (nNew && Store.devices.some(x => x.category === "unknown")) setTimeout(() => toast("Periksa perangkat baru di menu Tak Dikenal", "info", { label: "Lihat", fn: () => go("unknown") }), 900);
+  const blockedSeen = items.filter(x => x.d && x.d.blocked);
+  if (blockedSeen.length) setTimeout(() => toast(`🚨 ${blockedSeen.length} perangkat diblokir masih terhubung!`, "error", { label: "Lihat", fn: () => { ui.filter = "blocked"; go("devices"); renderDevList(); } }, 8000), 900);
+  else if (nNew && Store.devices.some(x => x.category === "unknown" && !x.blocked)) setTimeout(() => toast("Periksa perangkat baru di menu Tak Dikenal", "info", { label: "Lihat", fn: () => go("unknown") }), 900);
+}
+
+/* ================= KEAMANAN: BLOKIR & PASSWORD ================= */
+const chev = () => ic("chev").replace('class="ic"', 'class="ic chev"');
+function fmtDate(iso, withTime) {
+  if (!iso) return "—";
+  const o = { day: "numeric", month: "long", year: "numeric" };
+  if (withTime) Object.assign(o, { hour: "2-digit", minute: "2-digit" });
+  return new Date(iso).toLocaleString("id-ID", o);
+}
+async function copyText(t, label) {
+  try { await navigator.clipboard.writeText(t); toast((label || "Disalin") + ": " + t, "success"); }
+  catch (e) {
+    const ta = document.createElement("textarea"); ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); toast((label || "Disalin") + ": " + t, "success"); } catch (er) { toast("Gagal menyalin. Catat secara manual.", "error"); }
+    ta.remove();
+  }
+}
+const ruleName = d => (String(d.name || "").replace(/[^A-Za-z0-9-]/g, "").slice(0, 16) || "Blokir") ;
+const macBoxes = mac => `<div class="octets">${mac.split(":").map(o => `<span>${esc(o)}</span>`).join("")}</div>`;
+
+function openBlockGuide(id) {
+  const d = Store.devices.find(x => x.id === id); if (!d) return;
+  openSheet(`
+    <h2 class="sheet-title">🚫 Blokir ${esc(d.name)}</h2>
+    <p class="sheet-desc">Blokir dilakukan di halaman router. Ikuti langkahnya, lalu ketuk <b>Sudah Diblokir</b> agar GuardNet ikut mencatat.</p>
+    <div class="mac-card"><small>MAC Address · isi ke 6 kotak di router sesuai urutan</small>${macBoxes(d.mac)}
+      <button type="button" class="btn btn-soft btn-sm" id="cpMac">${ic("copy", 18)}Salin MAC</button></div>
+    <div class="steps" style="margin:16px 0">
+      <div class="step"><i>1</i><span>Ketuk <b>Buka Router</b>, login, lalu buka <b>Local Network → WLAN → WLAN Advanced</b>.</span></div>
+      <div class="step"><i>2</i><span>Di <b>Access Control-Mode</b>, ubah <b>SSID1</b> dan <b>SSID5</b> menjadi <b>Black List</b>, lalu <b>Apply</b>. Cukup sekali untuk semua blokir.</span></div>
+      <div class="step"><i>3</i><span>Di <b>Access Control-Rule</b>, ketuk <b>Create New Item</b>. Isi <b>Name</b>: <code class="k">${esc(ruleName(d))}</code>, <b>SSID</b>: SSID1, dan <b>MAC Address</b> seperti kotak di atas. Ketuk <b>Apply</b>.</span></div>
+      <div class="step"><i>4</i><span>Ulangi langkah 3 dengan <b>SSID: SSID5</b> agar jaringan 5G juga terblokir.</span></div>
+    </div>
+    <div class="warn-box">⚠️ Jangan pilih <b>White List</b>. Semua perangkat yang belum didaftarkan, termasuk HP Anda, bisa ikut terputus.</div>
+    <div class="note-box">💡 Jika perangkat ini muncul lagi dengan MAC lain, berarti pemiliknya tahu password WiFi. Cara paling ampuh: <button type="button" class="link-inline" data-act="pw-guide">ganti password WiFi</button>.</div>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-ghost" data-act="open-router">${ic("router", 18)}Buka Router</button>
+      <button type="button" class="btn btn-danger-solid" id="doBlock">${ic("check", 18)}Sudah Diblokir</button>
+    </div>`, body => {
+    body.querySelector("#cpMac").onclick = () => copyText(d.mac, "MAC disalin");
+    body.querySelector("#doBlock").onclick = () => {
+      const cur = Store.devices.find(x => x.id === id) || d;
+      Store.upsertDevice({ ...cur, blocked: true, blockedAt: new Date().toISOString() });
+      Store.commit(); closeSheet();
+      toast(`${cur.name} ditandai Diblokir. Impor ulang nanti untuk memastikan sudah terputus.`, "success", null, 5000);
+    };
+  });
+}
+function openUnblockGuide(id) {
+  const d = Store.devices.find(x => x.id === id); if (!d) return;
+  openSheet(`
+    <h2 class="sheet-title">🔓 Buka Blokir ${esc(d.name)}</h2>
+    <p class="sheet-desc">Hapus aturan blokirnya di router, lalu ketuk <b>Sudah Dibuka</b>.</p>
+    <div class="mac-card"><small>MAC Address yang dicari</small>${macBoxes(d.mac)}</div>
+    <div class="steps" style="margin:16px 0">
+      <div class="step"><i>1</i><span>Buka <b>Local Network → WLAN → WLAN Advanced</b>.</span></div>
+      <div class="step"><i>2</i><span>Di <b>Access Control-Rule</b>, cari aturan bernama <code class="k">${esc(ruleName(d))}</code> atau dengan MAC di atas.</span></div>
+      <div class="step"><i>3</i><span>Ketuk ikon <b>tempat sampah</b>, lalu <b>Apply</b>. Hapus juga aturan untuk SSID lainnya (SSID1 dan SSID5).</span></div>
+      <div class="step"><i>4</i><span>Jika sudah tidak ada perangkat yang diblokir, Anda boleh mengembalikan <b>Access Control-Mode</b> ke <b>No Filter</b>.</span></div>
+    </div>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-ghost" data-act="open-router">${ic("router", 18)}Buka Router</button>
+      <button type="button" class="btn btn-primary" id="doUnblock">${ic("check", 18)}Sudah Dibuka</button>
+    </div>`, body => {
+    body.querySelector("#doUnblock").onclick = () => {
+      const cur = Store.devices.find(x => x.id === id) || d;
+      Store.upsertDevice({ ...cur, blocked: false, blockedAt: null });
+      Store.commit(); closeSheet();
+      toast(`Blokir ${cur.name} dibuka`, "success");
+    };
+  });
+}
+
+function pwState() {
+  const t = Store.settings.pwChangedAt;
+  if (!t) return { set: false, days: null, due: false };
+  const days = Math.max(0, Math.floor((Date.now() - new Date(t).getTime()) / 86400000));
+  return { set: true, days, due: days >= 90 };
+}
+function pwAlert() {
+  const p = pwState();
+  if (p.set && !p.due) return "";
+  if (SS.get("gn_pw_dismiss") && !p.due) return "";
+  return `<button class="alert warnc" data-act="pw-guide"><span class="a-ic">${ic("key")}</span><span>${p.due
+    ? `<b>Password WiFi sudah ${p.days} hari tidak diganti</b><span>Disarankan ganti tiap 3 bulan untuk mencegah penyusup</span>`
+    : `<b>Kapan terakhir ganti password WiFi?</b><span>Catat tanggalnya agar GuardNet bisa mengingatkan Anda</span>`}</span>${chev()}</button>`;
+}
+function genPassword(len = 14) {
+  const sets = ["ABCDEFGHJKLMNPQRSTUVWXYZ", "abcdefghijkmnopqrstuvwxyz", "23456789", "@#%&*!?"];
+  const all = sets.join(""), rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
+  const out = sets.map(s => s[rnd(s.length)]);
+  while (out.length < len) out.push(all[rnd(all.length)]);
+  for (let i = out.length - 1; i > 0; i--) { const j = rnd(i + 1); [out[i], out[j]] = [out[j], out[i]]; }
+  return out.join("");
+}
+function openPasswordGuide() {
+  const p = pwState();
+  const localDate = iso => { const x = iso ? new Date(iso) : new Date(); return new Date(x.getTime() - x.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+  const today = localDate();
+  openSheet(`
+    <h2 class="sheet-title">🔑 Ganti Password WiFi</h2>
+    <p class="sheet-desc">Cara paling ampuh mengusir penyusup: semua perangkat terputus, dan hanya yang tahu password baru yang bisa masuk lagi.</p>
+    <div class="mac-card"><small>Saran password kuat (dibuat acak di HP Anda, tidak disimpan)</small>
+      <div class="pw-box" id="pwBox">${esc(genPassword())}</div>
+      <div class="imp-actions" style="justify-content:center;margin:0">
+        <button type="button" class="btn btn-ghost btn-sm" id="pwNew">${ic("refresh", 18)}Acak Lagi</button>
+        <button type="button" class="btn btn-soft btn-sm" id="pwCopy">${ic("copy", 18)}Salin</button>
+      </div></div>
+    <div class="steps" style="margin:16px 0">
+      <div class="step"><i>1</i><span>Ketuk <b>Buka Router</b>, lalu buka <b>Local Network → WLAN → WLAN Basic → WLAN SSID Configuration</b>.</span></div>
+      <div class="step"><i>2</i><span>Buka <b>SSID1 (2.4GHz)</b>, isi <b>WPA Passphrase</b> dengan password baru, lalu <b>Apply</b>.</span></div>
+      <div class="step"><i>3</i><span>Ulangi untuk <b>SSID5 (5GHz)</b> dengan password yang sama.</span></div>
+      <div class="step"><i>4</i><span>Semua perangkat akan terputus, termasuk HP ini. Itu normal. Sambungkan ulang perangkat keluarga dengan password baru, lalu <b>impor ulang</b> di GuardNet untuk memastikan penyusup sudah hilang.</span></div>
+    </div>
+    <div class="note-box">💡 <b>Tips:</b> minimal 12 karakter, campuran huruf besar-kecil, angka, dan simbol. Hindari nama, tanggal lahir, atau nomor HP. Untuk tamu, aktifkan <b>SSID2</b> sebagai WiFi Tamu dengan password berbeda agar password utama tidak perlu dibagikan.</div>
+    <label class="fld"><span>Tanggal terakhir password diganti${p.set ? ` · ${p.days} hari lalu` : ""}</span>
+      <input type="date" id="pwDate" max="${today}" value="${p.set ? localDate(Store.settings.pwChangedAt) : ""}"></label>
+    <small class="err" id="pwErr"></small>
+    <button type="button" class="btn btn-soft btn-block" id="pwToday" style="margin-bottom:10px">${ic("check", 18)}Saya baru menggantinya hari ini</button>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-ghost" data-act="open-router">${ic("router", 18)}Buka Router</button>
+      <button type="button" class="btn btn-primary" id="pwSave">Simpan Tanggal</button>
+    </div>`, body => {
+    const box = body.querySelector("#pwBox");
+    body.querySelector("#pwNew").onclick = () => { box.textContent = genPassword(); };
+    body.querySelector("#pwCopy").onclick = () => copyText(box.textContent, "Password disalin");
+    const save = val => {
+      Store.saveSettings({ pwChangedAt: new Date(val + "T12:00:00").toISOString() });
+      SS.del("gn_pw_dismiss");
+      Store.commit(); if (ui.tab === "settings") renderSettings();
+      closeSheet(); toast("Tanggal ganti password disimpan. GuardNet akan mengingatkan setelah 3 bulan.", "success", null, 4500);
+    };
+    body.querySelector("#pwToday").onclick = () => save(today);
+    body.querySelector("#pwSave").onclick = () => {
+      const v = body.querySelector("#pwDate").value;
+      if (!v) { body.querySelector("#pwErr").textContent = "Pilih tanggalnya dulu"; return; }
+      save(v);
+    };
+  });
 }
 
 /* ================= EXPORT / IMPORT ================= */
@@ -1803,6 +2002,9 @@ document.addEventListener("click", async e => {
     case "open-router": window.open("http://" + Store.settings.routerIp, "_blank", "noopener"); break;
     case "export": exportData(); break;
     case "router-import": openRouterImport(); break;
+    case "block": openBlockGuide(id); break;
+    case "unblock": openUnblockGuide(id); break;
+    case "pw-guide": openPasswordGuide(); break;
     case "import": $("#importFile").click(); break;
     case "logout": logout(); break;
     case "sync":
