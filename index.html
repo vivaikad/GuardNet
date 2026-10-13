@@ -10,6 +10,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GuardNet">
 <title>GuardNet – Wi-Fi Monitoring</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -562,7 +565,7 @@ body.no-nav #toasts{bottom:calc(24px + var(--safe-b))}
 const SUPABASE_URL = "https://zlkgmaqfgsyzqzqljmlt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LXdRXJUUo5wNwXxgcWWEeQ_A91a5tEH";
 
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.0.2";
 const HAS_SB = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 const SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 let sb = null;
@@ -713,47 +716,13 @@ function injectStatic() {
 }
 
 /* ================= PWA: ikon, manifest, service worker ================= */
-function rasterize(svg, size) {
-  return new Promise((res, rej) => {
-    const img = new Image();
-    img.onload = () => {
-      const c = document.createElement("canvas"); c.width = c.height = size;
-      c.getContext("2d").drawImage(img, 0, 0, size, size);
-      res(c.toDataURL("image/png"));
-    };
-    img.onerror = rej;
-    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-  });
-}
-function addLink(rel, href, extra = {}) {
-  let l = document.querySelector(`link[rel="${rel}"]`);
-  if (!l) { l = document.createElement("link"); l.rel = rel; document.head.appendChild(l); }
-  Object.entries(extra).forEach(([k, v]) => l.setAttribute(k, v));
-  l.href = href;
-}
-async function setupPWA() {
-  const svgAny = logoSVG("pa");
-  addLink("icon", "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgAny), { type: "image/svg+xml" });
-  const svgBleed = logoSVG("pb", { bleed: true });
-  const [i192, i512, m192, m512, a180] = await Promise.all([
-    rasterize(svgAny, 192), rasterize(svgAny, 512), rasterize(svgBleed, 192), rasterize(svgBleed, 512), rasterize(svgBleed, 180)
-  ]);
-  addLink("apple-touch-icon", a180);
-  const base = appBase();
-  const manifest = {
-    id: base, name: "GuardNet – Wi-Fi Monitoring", short_name: "GuardNet",
-    description: "Pantau dan kelola perangkat WiFi rumah Anda.",
-    start_url: base, scope: base, display: "standalone", orientation: "portrait",
-    background_color: "#0a1029", theme_color: "#0a1029", lang: "id",
-    icons: [
-      { src: i192, sizes: "192x192", type: "image/png", purpose: "any" },
-      { src: i512, sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: m192, sizes: "192x192", type: "image/png", purpose: "maskable" },
-      { src: m512, sizes: "512x512", type: "image/png", purpose: "maskable" }
-    ]
-  };
-  const blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
-  addLink("manifest", URL.createObjectURL(blob));
+/* Manifest & ikon PWA adalah file asli (manifest.webmanifest + PNG) agar Chrome
+   bisa memasang GuardNet sebagai aplikasi Android penuh (WebAPK), tanpa badge Chrome. */
+function setupPWA() {
+  const l = document.createElement("link");
+  l.rel = "icon"; l.type = "image/svg+xml";
+  l.href = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(logoSVG("pa"));
+  document.head.appendChild(l);
 }
 function registerSW() {
   if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
@@ -1629,7 +1598,7 @@ async function boot() {
   applyTheme(saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
   injectStatic();
   wireAuth();
-  setupPWA().catch(e => console.warn("Manifest:", e));
+  setupPWA();
   registerSW();
 
   const recovery = /type=recovery/.test(location.hash);
