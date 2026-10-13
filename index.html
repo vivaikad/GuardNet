@@ -310,6 +310,7 @@ code.mac{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:1
 .item-main span span,.dev-meta span{display:inline!important}
 .dn-txt small.dev-meta{white-space:normal;max-width:none}
 .mini-select{height:34px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface-2);font-size:12.5px;font-weight:600;padding:0 8px;color:var(--text);outline:none}
+.rename-note{color:var(--guest)!important;font-size:11.5px;font-weight:600}
 .dev-meta{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
 .sig-good{color:var(--on)}.sig-mid{color:var(--warn)}.sig-bad{color:var(--danger)}
 .btn-sm{height:38px;padding:0 14px;font-size:13px;border-radius:12px}
@@ -581,7 +582,7 @@ body.no-nav #toasts{bottom:calc(24px + var(--safe-b))}
 const SUPABASE_URL = "https://zlkgmaqfgsyzqzqljmlt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LXdRXJUUo5wNwXxgcWWEeQ_A91a5tEH";
 
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.1.1";
 const HAS_SB = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 const SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 let sb = null;
@@ -1612,6 +1613,10 @@ function parseRouterText(text) {
   return [...found.values()];
 }
 
+// Nama otomatis ("Tanpa Nama" / "Tanpa Nama AB:CD") boleh diganti nama dari router.
+// Nama yang sudah Anda ubah sendiri tidak akan pernah ditimpa.
+const isAutoName = n => /^Tanpa Nama( [0-9A-F]{2}:[0-9A-F]{2})?$/i.test(String(n || "").trim());
+const renameTo = (d, r) => (d && r.host && isAutoName(d.name)) ? r.host : null;
 let imp = null;
 function openRouterImport() {
   imp = { found: new Map(), markOffline: true, cats: {} };
@@ -1673,16 +1678,18 @@ function showImportPreview(justRead) {
     <div class="sum-row">
       <span class="badge t-unk">${nNew} baru</span>
       <span class="badge t-fam">${nUpd} diperbarui</span>
+      ${items.filter(x => renameTo(x.d, x.r)).length ? `<span class="badge t-guest">${items.filter(x => renameTo(x.d, x.r)).length} nama baru</span>` : ""}
       <span class="badge t-on">${items.length} online</span>
     </div>
     <div class="imp-list">${items.map(({ r, d }) => {
+      const newName = renameTo(d, r);
       const name = d ? d.name : (r.host || "Tanpa Nama");
       const cat = d ? d.category : (imp.cats[r.mac] || "unknown");
       const icon = devIcon({ name: name, notes: "" });
       const info = [r.band, r.rssi != null ? `<span class="${sig(r.rssi).cls}">${r.rssi} dBm</span>` : "", r.onlineSec != null ? "online " + fmtDur(r.onlineSec) : ""].filter(Boolean).join(" · ");
       return `<div class="item imp-item">
         <span class="av ${CAT[cat].cls}">${ic(icon, 20)}</span>
-        <span class="item-main"><b>${esc(name)}</b><span>${esc(r.mac)} · ${esc(r.ip)}</span>${info ? `<span>${info}</span>` : ""}</span>
+        <span class="item-main"><b>${newName ? `${esc(newName)}</b><span class="rename-note">sebelumnya: ${esc(name)}</span>` : `${esc(name)}</b>`}<span>${esc(r.mac)} · ${esc(r.ip)}</span>${info ? `<span>${info}</span>` : ""}</span>
         <span class="imp-right">${d ? catBadge(d.category) : `<select class="mini-select" data-mac="${r.mac}" aria-label="Kategori ${esc(name)}">
           ${Object.entries(CAT).map(([k, c]) => `<option value="${k}" ${cat === k ? "selected" : ""}>${c.emoji} ${c.label}</option>`).join("")}</select>`}</span>
       </div>`;
@@ -1705,14 +1712,18 @@ function showImportPreview(justRead) {
 function applyImport() {
   const { items, offline } = importPlan();
   const now = new Date().toISOString();
-  let nNew = 0, nUpd = 0, nOff = 0;
+  let nNew = 0, nUpd = 0, nOff = 0, nRen = 0;
   items.forEach(({ r, d }) => {
     const upd = { ip: r.ip, online: true, lastSeen: now };
     if (r.band) upd.band = r.band;
     if (r.rssi != null) upd.rssi = r.rssi;
     if (r.onlineSec != null) upd.onlineSec = r.onlineSec;
     if (r.host) upd.routerName = r.host;
-    if (d) { Store.upsertDevice({ ...d, ...upd }); nUpd++; }
+    if (d) {
+      const nn = renameTo(d, r);
+      if (nn) { upd.name = nn; nRen++; }
+      Store.upsertDevice({ ...d, ...upd }); nUpd++;
+    }
     else {
       Store.upsertDevice({ id: uuid(), name: r.host || "Tanpa Nama " + r.mac.slice(-5), mac: r.mac,
         category: imp.cats[r.mac] || "unknown", notes: "", createdAt: now, ...upd });
@@ -1724,7 +1735,7 @@ function applyImport() {
   Store.save(); Store.commit();
   closeSheet();
   imp = null;
-  toast(`Impor selesai: ${nNew} baru, ${nUpd} diperbarui${nOff ? `, ${nOff} offline` : ""}`, "success", null, 4500);
+  toast(`Impor selesai: ${nNew} baru, ${nUpd} diperbarui${nRen ? `, ${nRen} nama baru` : ""}${nOff ? `, ${nOff} offline` : ""}`, "success", null, 4500);
   if (nNew && Store.devices.some(x => x.category === "unknown")) setTimeout(() => toast("Periksa perangkat baru di menu Tak Dikenal", "info", { label: "Lihat", fn: () => go("unknown") }), 900);
 }
 
