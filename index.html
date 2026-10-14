@@ -602,7 +602,7 @@ body.no-nav #toasts{bottom:calc(24px + var(--safe-b))}
 const SUPABASE_URL = "https://zlkgmaqfgsyzqzqljmlt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LXdRXJUUo5wNwXxgcWWEeQ_A91a5tEH";
 
-const APP_VERSION = "1.2.0";
+const APP_VERSION = "1.2.2";
 const HAS_SB = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 const SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 let sb = null;
@@ -1814,7 +1814,15 @@ async function copyText(t, label) {
     ta.remove();
   }
 }
-const ruleName = d => (String(d.name || "").replace(/[^A-Za-z0-9-]/g, "").slice(0, 16) || "Blokir") ;
+// Nama aturan di router ZTE: maksimal 10 karakter & harus unik.
+// Format: 8 karakter dari nama + "24" (SSID1) atau "5G" (SSID5).
+// Perangkat "Tanpa Nama" memakai "TN" + 4 digit akhir MAC, mis. TN77D124.
+const ruleName = (d, sfx = "") => {
+  const base = isAutoName(d.name) || !String(d.name || "").replace(/[^A-Za-z0-9]/g, "")
+    ? "TN" + d.mac.replace(/:/g, "").slice(-4)
+    : String(d.name).replace(/[^A-Za-z0-9]/g, "");
+  return base.slice(0, 8).toUpperCase() + sfx;
+};
 const macBoxes = mac => `<div class="octets">${mac.split(":").map(o => `<span>${esc(o)}</span>`).join("")}</div>`;
 
 function openBlockGuide(id) {
@@ -1827,8 +1835,8 @@ function openBlockGuide(id) {
     <div class="steps" style="margin:16px 0">
       <div class="step"><i>1</i><span>Ketuk <b>Buka Router</b>, login, lalu buka <b>Local Network → WLAN → WLAN Advanced</b>.</span></div>
       <div class="step"><i>2</i><span>Di <b>Access Control-Mode</b>, ubah <b>SSID1</b> dan <b>SSID5</b> menjadi <b>Black List</b>, lalu <b>Apply</b>. Cukup sekali untuk semua blokir.</span></div>
-      <div class="step"><i>3</i><span>Di <b>Access Control-Rule</b>, ketuk <b>Create New Item</b>. Isi <b>Name</b>: <code class="k">${esc(ruleName(d))}</code>, <b>SSID</b>: SSID1, dan <b>MAC Address</b> seperti kotak di atas. Ketuk <b>Apply</b>.</span></div>
-      <div class="step"><i>4</i><span>Ulangi langkah 3 dengan <b>SSID: SSID5</b> agar jaringan 5G juga terblokir.</span></div>
+      <div class="step"><i>3</i><span>Di <b>Access Control-Rule</b>, ketuk <b>Create New Item</b>. Isi <b>Name</b>: <code class="k">${esc(ruleName(d, "24"))}</code>, <b>SSID</b>: SSID1, dan <b>MAC Address</b> seperti kotak di atas. Ketuk <b>Apply</b>.</span></div>
+      <div class="step"><i>4</i><span>Ketuk <b>Create New Item</b> lagi. Isi <b>Name</b>: <code class="k">${esc(ruleName(d, "5G"))}</code> (nama <b>harus berbeda</b> dari aturan pertama, maksimal 10 karakter), <b>SSID</b>: SSID5, MAC yang sama, lalu <b>Apply</b>. Ini agar jaringan 5G juga terblokir.</span></div>
     </div>
     <div class="warn-box">⚠️ Jangan pilih <b>White List</b>. Semua perangkat yang belum didaftarkan, termasuk HP Anda, bisa ikut terputus.</div>
     <div class="note-box">💡 Jika perangkat ini muncul lagi dengan MAC lain, berarti pemiliknya tahu password WiFi. Cara paling ampuh: <button type="button" class="link-inline" data-act="pw-guide">ganti password WiFi</button>.</div>
@@ -1853,7 +1861,7 @@ function openUnblockGuide(id) {
     <div class="mac-card"><small>MAC Address yang dicari</small>${macBoxes(d.mac)}</div>
     <div class="steps" style="margin:16px 0">
       <div class="step"><i>1</i><span>Buka <b>Local Network → WLAN → WLAN Advanced</b>.</span></div>
-      <div class="step"><i>2</i><span>Di <b>Access Control-Rule</b>, cari aturan bernama <code class="k">${esc(ruleName(d))}</code> atau dengan MAC di atas.</span></div>
+      <div class="step"><i>2</i><span>Di <b>Access Control-Rule</b>, cari aturan bernama <code class="k">${esc(ruleName(d, "24"))}</code> dan <code class="k">${esc(ruleName(d, "5G"))}</code> (atau yang ber-MAC di atas).</span></div>
       <div class="step"><i>3</i><span>Ketuk ikon <b>tempat sampah</b>, lalu <b>Apply</b>. Hapus juga aturan untuk SSID lainnya (SSID1 dan SSID5).</span></div>
       <div class="step"><i>4</i><span>Jika sudah tidak ada perangkat yang diblokir, Anda boleh mengembalikan <b>Access Control-Mode</b> ke <b>No Filter</b>.</span></div>
     </div>
